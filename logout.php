@@ -3,6 +3,6 @@
   session_unset(); // Unset the session variables that we have in login
   session_destroy(); // Delete or destroy all session variables
 
-  header("location: login.php");
+  header("location: index.php");
   exit;
 ?>

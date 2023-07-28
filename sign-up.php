@@ -12,7 +12,7 @@
       VALUES('$first_name', '$last_name', '$username', '$password')";
 
     if ($conn->query($sql)) {
-      header("location: login.php");
+      header("location: index.php");
       exit;
     } else {
       die("Error in registering new user. " . $conn->error);
