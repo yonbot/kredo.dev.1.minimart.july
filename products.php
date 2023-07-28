@@ -2,8 +2,19 @@
   session_start();
   require "connection.php";
 
-  function getAllProducts() {
+  $_SESSION['section_id'] = "all";
+  if (isset($_POST['btn_filter'])) {
+    $_SESSION['section_id'] = $_POST['section_id'];
+  }
+
+  function getAllProducts($section_id) {
     $conn = connection();
+
+    $where = "";
+    if (is_numeric($section_id)) {
+      $where = "WHERE products.section_id = $section_id";
+    }
+
     $sql = "SELECT products.id AS id
         , products.name AS `name`
         , products.description AS `description`
@@ -11,12 +22,24 @@
         , sections.name AS `section` 
       FROM products 
       INNER JOIN sections ON products.section_id = sections.id 
+      $where
       ORDER BY products.id";
-    
+
     if ($result = $conn->query($sql)) {
       return $result;
     } else {
       die("Error in retrieving the products. " . $conn->error);
+    }
+  }
+
+  function getAllSections() {
+    $conn = connection(); // connection object
+    $sql = "SELECT * FROM sections";
+
+    if ($result = $conn->query($sql)) {
+      return $result;
+    } else {
+      die("Error in retrieving sections " . $conn->error);
     }
   }
 ?>
@@ -43,6 +66,28 @@
       <div class="col">
         <h2 class="fw-light">Products</h2>
       </div>
+      <div class="col">
+        <form action="" method="post">
+          <div class="input-group">
+            <select name="section_id" id="section-id" 
+              class="form-select w-50" required>
+              <option value="all">All</option>
+              <?php
+                // 各レコードにアクセス
+                $all_sections = getAllSections();
+                while ($section = $all_sections->fetch_assoc()) {
+                  if ($section['id'] == $_SESSION['section_id']) {
+                    echo "<option value='" . $section['id'] . "' selected>" . $section['name'] . "</option>";
+                  } else {
+                    echo "<option value='" . $section['id'] . "'>" . $section['name'] . "</option>";
+                  }
+                }
+              ?>
+            </select>
+            <input type="submit" name="btn_filter" class="btn btn-success" value="Filter">
+          </div>
+        </form>
+      </div>
       <div class="col text-end">
         <a href="add-product.php" class="btn btn-success"><i class="fa-solid fa-circle-plus"></i> New Products</a>
       </div>
@@ -61,7 +106,7 @@
       </thead>
       <tbody>
         <?php
-          $all_products = getAllProducts();
+          $all_products = getAllProducts($_SESSION['section_id']);
           while ($product = $all_products->fetch_assoc()) {
         ?>
           <tr>
@@ -83,6 +128,14 @@
       </tbody>
     </table>
   </div>
+
+  <script>
+    let select = document.querySelector('[name="section_id"]');
+
+    select.onchange = event => { 
+      console.log(select.selectedIndex);
+    }
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
