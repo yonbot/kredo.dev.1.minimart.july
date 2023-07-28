@@ -2,6 +2,11 @@
   session_start();
   require "connection.php";
 
+  if (!isset($_SESSION['id'])) {
+    header("location: index.php");
+    exit;
+  }
+
   function createSection($name) {
     // Connection
     $conn = connection(); // this is the function we have in connection.php

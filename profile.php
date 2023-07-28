@@ -2,6 +2,11 @@
   session_start();
   require "connection.php";
 
+  if (!isset($_SESSION['id'])) {
+    header("location: index.php");
+    exit;
+  }
+
   $user = getUser();
 
   function getUser() {

@@ -2,6 +2,11 @@
   session_start();
   require "connection.php";
 
+  if (!isset($_SESSION['id'])) {
+    header("location: index.php");
+    exit;
+  }
+
   $_SESSION['section_id'] = "all";
   if (isset($_POST['btn_filter'])) {
     $_SESSION['section_id'] = $_POST['section_id'];

@@ -2,6 +2,11 @@
   session_start();
   require "connection.php";
 
+  if (!isset($_SESSION['id'])) {
+    header("location: index.php");
+    exit;
+  }
+
   $id = $_GET['id'];
   $product = getProduct($id); // $product is an associative array
 
